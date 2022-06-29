@@ -1,2 +1,20 @@
 image:
   file: .gitpod.Dockerfile
+
+tasks:
+  - command: |
+      if [ -n "$OP_CONFIG" ]
+      then
+          mkdir ~/.config/op
+          chmod 700 ~/.config/op
+          echo $OP_CONFIG > ~/.config/op/config
+          chmod 600 ~/.config/op/config
+      else
+          echo "Register your 1Password account. Check "Set Up Another Device" in your 1Password app."
+          op account add
+          gp env OP_CONFIG="$(cat ~/.config/op/config)" > /dev/null
+      fi
+      echo "Signing in to 1password ..."
+      eval $(op signin)
+
+      op item get --vault Private MyItem
